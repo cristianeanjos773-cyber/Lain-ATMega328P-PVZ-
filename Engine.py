@@ -1,6 +1,7 @@
 import discord
 import os
 from discord.ext import commands
+
 from config import PREFIX
 
 def create_bot():
@@ -22,15 +23,15 @@ def create_bot():
 
     bot.setup_hook = setup_hook 
 
-
     @bot.event
     async def on_ready():
         ChannelID = 1411887431254413384 # IF YOU'RE A PERSON CHANGING MY BOT, CHANGE THIS TO YOUR OWN CHANNEL ID.
-        channel = bot.get_channel(ChannelID)
+        channel = bot.get_channel(ChannelID)  
 
         await bot.tree.sync()
    
         if channel:
+            #await UsartATest(channel)
             await channel.send("``` LAIN STATUS: WIRED CONNECTION ESTABILISHED! ```") # type: ignore
         else:
             print("channel doesnt exist.")
