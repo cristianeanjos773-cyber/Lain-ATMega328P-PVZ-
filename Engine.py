@@ -16,7 +16,7 @@ def create_bot():
     
     async def setup_hook ():
         
-        for FileName in os.listdir('./cogs'):
+        for FileName in os.listdir('cogs'):
             if FileName.endswith('.py') and not FileName.startswith('__'):
                 await bot.load_extension(f"cogs.{FileName[:-3]}")
 
@@ -25,7 +25,7 @@ def create_bot():
 
     @bot.event
     async def on_ready():
-        ChannelID = 1411887431254413384 # IF YOU'RE A PERSON CHANGING MY BOT, CHANGE THIS TO YOUR OWN CHANNEL ID.
+        ChannelID = 1412280982253342781 # IF YOU'RE A PERSON CHANGING MY BOT, CHANGE THIS TO YOUR OWN CHANNEL ID.
         channel = bot.get_channel(ChannelID)  
 
         await bot.tree.sync()
