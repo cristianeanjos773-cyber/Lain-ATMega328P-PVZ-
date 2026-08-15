@@ -49,7 +49,7 @@ class USART_BOT(commands.Cog):
         if not ConnectedPort or ConnectedPort.in_waiting == 0:
             return
 
-        FIRST_BYTE = ConnectedPort.read(1); """
+        FIRST_BYTE: bytes = ConnectedPort.read(1); """
             THIS will be the first byte coming to the discord bot, it is not an int or anything else, but a character. this character will determine
             if the next bytes are light status, temperature status, whatever. 
             this is needed to organize the python bot, so it can get ready to read an int or a value. 
