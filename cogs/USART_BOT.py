@@ -6,6 +6,7 @@ from ATMega328PCommandHandlers.LightCommandHandler import LightCommandHandler
 
 from GLOBAL.GlobalTypes import USART_PROPERTIES 
 from discord.ext import commands, tasks
+from typing import Any 
 
 from Engine import Bot
 
@@ -22,7 +23,7 @@ class USART_BOT(commands.Cog):
         self.bot: Bot = bot
         self.ConnectedPort: serial.Serial | None = None       
         self.USART_STATUS: USART_PROPERTIES = USART_STATUS
-        self.USART_HANDLERS: USART_PROPERTIES = self.USART_HANDLERS
+        self.USART_HANDLERS: dict[bytes, Any] = self.USART_STATUS.USART_HANDLERS
 
 
     async def SETUP_USART(self):
@@ -85,7 +86,10 @@ class USART_BOT(commands.Cog):
         CommandHandler: callable = self.USART_HANDLERS.get(FIRST_BYTE) #type: ignore 
 
         if CommandHandler:
-            await CommandHandler(FIRST_BYTE)
+            await CommandHandler(FIRST_BYTE, self.Channel)
+            print("COMMAND HANDLER HAS BEEN FOND!")
+        else:
+            print("WE WERE NOT ABLKE TO FIND HANDLER", FIRST_BYTE)
 
     async def USART_SEND(self, MESSAGE: bytes):
             ConnectedPort = self.ConnectedPort 

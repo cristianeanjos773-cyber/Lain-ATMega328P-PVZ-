@@ -5,12 +5,13 @@ in the flask server I created in RunBot.py
 import requests 
 import discord
 from discord.ext import commands  
+from Engine import Bot
 
 URL_FLASK = ""
 
 class InternetCog(commands.Cog):
 
-    def __init__(self, bot: commands.Bot) -> None: 
+    def __init__(self, bot: Bot) -> None: 
         self.bot = bot  
         self.CHANNEL_SEND_ID = 1412280982253342781
 
@@ -28,3 +29,6 @@ class InternetCog(commands.Cog):
         except requests.exceptions.RequestException:
             pass
              
+
+async def setup(bot: Bot):
+    await bot.add_cog(InternetCog(bot))

@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from discord.ext import commands 
+from Engine import Bot
 
 if TYPE_CHECKING:
     class USART_BOT(commands.Cog):
@@ -11,8 +12,8 @@ TURN_ON_LED_COMMAND: bytes = b'K'
 TURN_OFF_LED_COMMAND: bytes = b'J'
 
 class LightenUPLEDClass(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
-        self.bot: commands.Bot = bot 
+    def __init__(self, bot: Bot) -> None:
+        self.bot: Bot = bot 
 
     @commands.command(name="LightenUPLED")
     async def LightenUpLED(self, ctx: commands.Context[commands.Bot]):
@@ -35,5 +36,5 @@ class LightenUPLEDClass(commands.Cog):
                 
 
 
-async def setup(bot: commands.Bot):
+async def setup(bot: Bot):
     await bot.add_cog(LightenUPLEDClass(bot))
