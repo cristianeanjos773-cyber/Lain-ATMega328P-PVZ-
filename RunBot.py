@@ -2,7 +2,7 @@ from threading import Thread
 from Engine import create_bot
 from flask import Flask, request 
 from config import TOKEN 
-from Engine import create_bot, BotAttributes  # <-- Adicione BotAttributes aqui no import
+from Engine import create_bot, BotAttributes  
 
 app = Flask(__name__)
 
@@ -31,4 +31,5 @@ def main():
     bot.run(str(TOKEN))  
     
 if __name__ == "__main__":
-    main()
+    main() # The born of Lain's Digital Mind.
+    # Let's all love Lain.  

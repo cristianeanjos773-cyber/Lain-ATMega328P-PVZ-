@@ -16,7 +16,7 @@ COMMUNICATION_NULL: bytes = b'N'
 
 LIGHT_COMMAND: bytes = b'L'
 BUTTON_COMMAND: bytes = b'B'
-DISTANCE_SENSOR_COMMAND: bytes = b'D' 
+#DISTANCE_SENSOR_COMMAND: bytes = b'D'  (dont wanna do it anymore, too stressful + protoboard doesnt have much space left)
 
 class USART_BOT(commands.Cog): 
     def __init__(self, bot: Bot, USART_STATUS: USART_PROPERTIES) -> None:
@@ -38,11 +38,13 @@ class USART_BOT(commands.Cog):
 
             self.ConnectedPort = serial.Serial(port=SERIAL_PORT, baudrate=BAUDRATE, timeout=TIMEOUT)
             print(self.Channel, self.ConnectedPort)
+
             if not self.READ_LOOP.is_running():
                self.READ_LOOP.start()  
                 
             if isinstance(self.Channel, discord.TextChannel):
                 await self.Channel.send(f"```[LAIN SERIAL STATUS]: SUCCESS. Lain was able to connect to COM3 Serial PORT.```")
+
 
         except Exception as error:
 
@@ -86,7 +88,7 @@ class USART_BOT(commands.Cog):
         CommandHandler: callable = self.USART_HANDLERS.get(FIRST_BYTE) #type: ignore 
 
         if CommandHandler:
-            await CommandHandler(FIRST_BYTE, self.Channel)
+            await CommandHandler(FIRST_BYTE, self.Channel, self.ConnectedPort)
             print("COMMAND HANDLER HAS BEEN FOND!")
         else:
             print("WE WERE NOT ABLKE TO FIND HANDLER", FIRST_BYTE)
@@ -100,19 +102,16 @@ class USART_BOT(commands.Cog):
             ConnectedPort.write(MESSAGE)            
 
             if isinstance(self.Channel, discord.TextChannel):
-                await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: {MESSAGE} to ATMega328P!```")     
+                await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: {MESSAGE}, (Commnucation ERROR) to ATMega328P!```")     
 
 
     @tasks.loop(seconds=0.5)
     async def READ_LOOP(self):
-        await self.USART_READ()
+        await self.USART_READ() 
 
     @READ_LOOP.before_loop
     async def BEFORE_READ_LOOP(self):
         await self.bot.wait_until_ready()
-
-    
-        
 
 async def setup(bot: Bot) -> None:
     USART_STATUS: USART_PROPERTIES = USART_PROPERTIES(

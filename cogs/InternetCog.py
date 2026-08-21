@@ -9,7 +9,7 @@ import time
 from discord.ext import commands  
 from Engine import Bot
 
-URL_FLASK = ""
+URL_FLASK = "http://localhost:5000/Receive"
 
 class InternetCog(commands.Cog):
 
@@ -33,7 +33,7 @@ class InternetCog(commands.Cog):
             
                 if Port.status_code == 200:
                     if isinstance(self.Channel, discord.TextChannel):
-                        await self.Channel.send(f"```json\n[LAIN WIRED CONNECTION]: SENT PACKAGE TO THE WIRED! PACKAGE SENT: '{self.DataToSend}' ```")
+                        await self.Channel.send(f"```json\n[LAIN WIRED CONNECTION]: SENT PACKAGE TO THE WIRED! PACKAGE SENT: '{self.DataToSend}' ```") ## GG 
                     break 
                 else:
                     if isinstance(self.Channel, discord.TextChannel):
@@ -48,7 +48,15 @@ class InternetCog(commands.Cog):
                 time.sleep(2)
             else:
                 if isinstance(self.Channel, discord.TextChannel):
-                    await self.Channel.send(f"```[LAIN WIRED CONNECTION STATUS]: FATAL ERROR! COULD NOT SEND PACKAGE AFTER: '{MaxAttempts}' (its so over :skull:)  ```") # i pray for ts not to happen honestly, pls internet Lain Wired God, dont do thnis ever.  
+                    await self.Channel.send(f"```[LAIN WIRED CONNECTION STATUS]: FATAL ERROR! COULD NOT SEND PACKAGE AFTER: '{MaxAttempts}' (its so over :skull:)  ```") # i pray for ts not to happen honestly, pls internet Lain Wired God, dont do thnis ever.
+
+    @commands.command(name="SendDataToInternetCommand")
+    async def SendDataToInternetCommand(self, ctx: commands.Context[Bot]):
+        MessageToSend: str = "Lain Command 1" # this is for tests, not the finished version 
+
+        await ctx.send(f"```[LAIN WIRED CONNECTION STATUS]: REQUESTED TO SEND: '{MessageToSend}' ```")
+        await self.SendDataToInternet(Message=MessageToSend)
+                      
                 
 
 async def setup(bot: Bot):

@@ -41,7 +41,7 @@ def create_bot() ->Bot:
    
         if channel:
             #await UsartATest(channel)
-            await channel.send("``` LAIN STATUS: WIRED CONNECTION ESTABILISHED! ```") # type: ignore
+            await channel.send("```[LAIN BOOT STATUS]: LAIN IS ONLINE!```") # type: ignore
         else:
             print("channel doesnt exist.")
 

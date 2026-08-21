@@ -16,7 +16,7 @@ class LightenUPLEDClass(commands.Cog):
         self.bot: Bot = bot 
 
     @commands.command(name="LightenUPLED")
-    async def LightenUpLED(self, ctx: commands.Context[commands.Bot]):
+    async def LightenUpLED(self, ctx: commands.Context[Bot]):
         USART_COG = self.bot.get_cog("USART_BOT")
         
         if USART_COG:
@@ -25,7 +25,7 @@ class LightenUPLEDClass(commands.Cog):
             await COG_SERIAL.USART_SEND(TURN_ON_LED_COMMAND)
 
     @commands.command(name="TurnOFFLED")
-    async def TurnOFFLED(self, ctx : commands.Context[commands.Bot]):
+    async def TurnOFFLED(self, ctx : commands.Context[Bot]):
             USART_COG = self.bot.get_cog("USART_BOT")
                 
             if USART_COG:
