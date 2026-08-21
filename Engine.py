@@ -1,10 +1,19 @@
 import discord
 import os
+from typing import Any
 from discord.ext import commands
+from GLOBAL.GlobalTypes import BotAttributes 
+
 
 from config import PREFIX
 
-def create_bot():
+class Bot(commands.Bot):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.Config: BotAttributes = BotAttributes(ChannelSendId=1412280982253342781)
+
+
+def create_bot() ->Bot:
 
     intents = discord.Intents.default()
     intents.message_content = True
@@ -12,7 +21,7 @@ def create_bot():
     intents.members = True 
     intents.voice_states = True
     
-    bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+    bot = Bot(command_prefix=PREFIX, intents=intents)
     
     async def setup_hook ():
         

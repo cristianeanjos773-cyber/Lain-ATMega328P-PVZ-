@@ -1,19 +1,29 @@
 import serial 
 import discord
-from GLOBAL.GlobalTypes import USART_PROPERTIES 
 
-from utils.LightNumberStatus import LightNumberStatus 
+from ATMega328PCommandHandlers.ButtonCommandHandler import ButtonCommandHandler
+from ATMega328PCommandHandlers.LightCommandHandler import LightCommandHandler 
+
+from GLOBAL.GlobalTypes import USART_PROPERTIES 
 from discord.ext import commands, tasks
+
+from Engine import Bot
 
 COMMUNICATION_SUCCESS: bytes = b'S'
 COMMUNICATION_ERROR: bytes = b'E'
 COMMUNICATION_NULL: bytes = b'N'
 
+LIGHT_COMMAND: bytes = b'L'
+BUTTON_COMMAND: bytes = b'B'
+DISTANCE_SENSOR_COMMAND: bytes = b'D' 
+
 class USART_BOT(commands.Cog): 
-    def __init__(self, bot: commands.Bot, USART_STATUS: USART_PROPERTIES) -> None:
-        self.bot: commands.Bot = bot
+    def __init__(self, bot: Bot, USART_STATUS: USART_PROPERTIES) -> None:
+        self.bot: Bot = bot
         self.ConnectedPort: serial.Serial | None = None       
         self.USART_STATUS: USART_PROPERTIES = USART_STATUS
+        self.USART_HANDLERS: USART_PROPERTIES = self.USART_HANDLERS
+
 
     async def SETUP_USART(self):
         UsartStatus = self.USART_STATUS 
@@ -21,7 +31,7 @@ class USART_BOT(commands.Cog):
         BAUDRATE = UsartStatus.BAUDRATE
         TIMEOUT = UsartStatus.TIMEOUT 
 
-        self.Channel = await self.bot.fetch_channel(self.USART_STATUS.CHANNEL_SEND_ID)
+        self.Channel = await self.bot.fetch_channel(self.bot.Config.ChannelSendId)
 
         try:
 
@@ -49,17 +59,17 @@ class USART_BOT(commands.Cog):
 
     
     async def USART_READ(self):
-
         ConnectedPort = self.ConnectedPort    
 
         if not ConnectedPort or ConnectedPort.in_waiting == 0:
             return
 
-        FIRST_BYTE: bytes = ConnectedPort.read(1); """
+        """
             THIS will be the first byte coming to the discord bot, it is not an int or anything else, but a character. this character will determine
             if the next bytes are light status, temperature status, whatever. 
             this is needed to organize the python bot, so it can get ready to read an int or a value. 
         """
+        FIRST_BYTE: bytes = ConnectedPort.read(1); 
 
         print(FIRST_BYTE)
 
@@ -67,26 +77,15 @@ class USART_BOT(commands.Cog):
             await self.USART_SEND(COMMUNICATION_ERROR)
             return 
 
-        #print(ConnectedPort.writable())
-        #print(COMMUNICATION_SUCCESS)
+        print(ConnectedPort.writable())
+        print(COMMUNICATION_SUCCESS)
         
         ConnectedPort.write(COMMUNICATION_SUCCESS) 
 
-        if FIRST_BYTE == b'L':  
-            LIGHT_BYTES: bytes = ConnectedPort.read(2)
-            LIGHT_VALUE = int.from_bytes(LIGHT_BYTES, byteorder="big")
-            LIGHT_STATUS: str = LightNumberStatus(LIGHT_VALUE) 
+        CommandHandler: callable = self.USART_HANDLERS.get(FIRST_BYTE) #type: ignore 
 
-            if isinstance(self.Channel, discord.TextChannel):
-                await self.Channel.send(f"```[LAIN SERIAL PORT]: CRIS'S ROOM NUMBER LIGHT STATUS Number:'{LIGHT_VALUE}', \n LIGHT STATUS: '{LIGHT_STATUS}'```")
-
-        elif FIRST_BYTE == b'B':
-            BUTTON_CHARACTER: str = FIRST_BYTE.decode('utf-8').strip() 
-
-
-            if isinstance(self.Channel, discord.TextChannel):
-                await self.Channel.send(f"```[LAIN SERIAL PORT]: byte RECEIVED: '{BUTTON_CHARACTER}' ```")    
-
+        if CommandHandler:
+            await CommandHandler(FIRST_BYTE)
 
     async def USART_SEND(self, MESSAGE: bytes):
             ConnectedPort = self.ConnectedPort 
@@ -111,12 +110,15 @@ class USART_BOT(commands.Cog):
     
         
 
-async def setup(bot: commands.Bot) -> None:
+async def setup(bot: Bot) -> None:
     USART_STATUS: USART_PROPERTIES = USART_PROPERTIES(
         SERIAL_PORT='COM3',
         BAUDRATE=9600, 
-        CHANNEL_SEND_ID=1412280982253342781,  
         TIMEOUT=1,
+        USART_HANDLERS= { #type: ignore 
+            LIGHT_COMMAND: LightCommandHandler,
+            BUTTON_COMMAND: ButtonCommandHandler, 
+        }
     )
 
     await bot.add_cog(USART_BOT(bot, USART_STATUS)) 

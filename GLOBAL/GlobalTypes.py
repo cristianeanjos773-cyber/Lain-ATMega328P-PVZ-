@@ -1,9 +1,12 @@
-from dataclasses import dataclass
-
+from dataclasses import dataclass, field
 
 @dataclass
 class USART_PROPERTIES:
     SERIAL_PORT: str 
     BAUDRATE: int
-    CHANNEL_SEND_ID: int
     TIMEOUT: int  
+    USART_HANDLERS: dict[bytes, function] = field(default_factory=dict) # type: ignore
+
+@dataclass
+class BotAttributes: 
+    ChannelSendId: int

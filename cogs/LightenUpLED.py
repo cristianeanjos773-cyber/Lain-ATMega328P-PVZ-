@@ -7,7 +7,8 @@ if TYPE_CHECKING:
 else:
     USART_BOT = commands.Cog
 
-LED_COMMAND: bytes = b'K'
+TURN_ON_LED_COMMAND: bytes = b'K'
+TURN_OFF_LED_COMMAND: bytes = b'J'
 
 class LightenUPLEDClass(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -16,10 +17,23 @@ class LightenUPLEDClass(commands.Cog):
     @commands.command(name="LightenUPLED")
     async def LightenUpLED(self, ctx: commands.Context[commands.Bot]):
         USART_COG = self.bot.get_cog("USART_BOT")
-
+        
         if USART_COG:
-            COG_SERIAL: USART_BOT = USART_COG # type: ignore 
-            await COG_SERIAL.USART_SEND(LED_COMMAND)
+            COG_SERIAL: USART_BOT = USART_COG # type: ignore
+            print(TURN_ON_LED_COMMAND) 
+            await COG_SERIAL.USART_SEND(TURN_ON_LED_COMMAND)
+
+    @commands.command(name="TurnOFFLED")
+    async def TurnOFFLED(self, ctx : commands.Context[commands.Bot]):
+            USART_COG = self.bot.get_cog("USART_BOT")
+                
+            if USART_COG:
+                COG_SERIAL: USART_BOT = USART_COG # type: ignore
+                print(TURN_ON_LED_COMMAND) 
+                await COG_SERIAL.USART_SEND(TURN_OFF_LED_COMMAND)
+
+                
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(LightenUPLEDClass(bot))
