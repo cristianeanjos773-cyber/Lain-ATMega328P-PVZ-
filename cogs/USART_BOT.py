@@ -44,10 +44,10 @@ class USART_BOT(commands.Cog):
             if isinstance(self.Channel, discord.TextChannel):
                 await self.Channel.send(f"```[LAIN SERIAL STATUS]: SUCCESS. Lain was able to connect to COM3 Serial PORT.```")
 
-        except Exception as e:
+        except Exception as error:
 
             if isinstance(self.Channel, discord.TextChannel):
-               await self.Channel.send(f"```[LAIN SERIAL STATUS]: FAILED! Was not able to connect\nREASON: {e}```")
+               await self.Channel.send(f"```[LAIN SERIAL STATUS]: FAILED! Was not able to connect\nREASON: {error}```")
 
     async def cog_load(self):
         await self.SETUP_USART()
