@@ -16,4 +16,4 @@ class JSONType:
     success: bool
     message: str
     origin: str
-    payload: dict | None = None
+    payload: dict | None = None # type: ignore 

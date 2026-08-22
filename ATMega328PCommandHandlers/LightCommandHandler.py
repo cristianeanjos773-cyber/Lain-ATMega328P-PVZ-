@@ -2,6 +2,8 @@ import discord
 import serial 
 
 from utils.LightNumberStatus import LightNumberStatus 
+from GLOBAL.GlobalTypes import JSONType 
+from utils.SendDataToInternet import SendDataToInternet 
 
 async def LightCommandHandler(FIRST_BYTE: bytes, Channel: int, ConnectedPort: serial.Serial | None) -> None:
 
@@ -15,7 +17,15 @@ async def LightCommandHandler(FIRST_BYTE: bytes, Channel: int, ConnectedPort: se
     print("LIGHT BYTES:", LIGHT_BYTES, "FIRST BYTE:", FIRST_BYTE)
         
     LIGHT_VALUE = int.from_bytes(LIGHT_BYTES, byteorder="big")
-    LIGHT_STATUS: str = LightNumberStatus(LIGHT_VALUE) 
+    LIGHT_STATUS: str = LightNumberStatus(LIGHT_VALUE)
+
+    LightJSON: JSONType = JSONType(
+        success=True, 
+        message=LIGHT_STATUS, 
+        origin="LainATMega328P"    
+    )
+
+    await SendDataToInternet(Channel=Channel, JSON=LightJSON)
 
     if isinstance(Channel, discord.TextChannel):
         await Channel.send(f"```[LAIN SERIAL PORT, LIGHT SENSOR]: CRIS'S ROOM NUMBER LIGHT STATUS Number:'{LIGHT_VALUE}',\nLIGHT STATUS: '{LIGHT_STATUS}'```")

@@ -13,7 +13,6 @@ from GLOBAL.GlobalTypes import JSONType
 
 #URL_FLASK = "http://localhost:5000/Receive"
 
-
 class InternetCog(commands.Cog):
 
     def __init__(self, bot: Bot) -> None: 
@@ -21,6 +20,7 @@ class InternetCog(commands.Cog):
    
     @commands.command(name="SendDataToInternetCommand")
     async def SendDataToInternetCommand(self, ctx: commands.Context[Bot]):
+        Channel = self.bot.Config.ChannelSendId 
 
         JSONToSend: JSONType = JSONType(
             success=True,
@@ -29,7 +29,7 @@ class InternetCog(commands.Cog):
         )
            
         await ctx.send(f"```[LAIN WIRED CONNECTION STATUS]: REQUESTED TO SEND: '{JSONToSend}' ```")
-        await SendDataToInternet(bot=self.bot, JSON=JSONToSend)
+        await SendDataToInternet(Channel=Channel, JSON=JSONToSend)
                       
                 
 

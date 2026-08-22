@@ -23,15 +23,17 @@ class LightenUPLEDClass(commands.Cog):
             COG_SERIAL: USART_BOT = USART_COG # type: ignore
             print(TURN_ON_LED_COMMAND) 
             await COG_SERIAL.USART_SEND(TURN_ON_LED_COMMAND)
+            await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn on the RED LED```")
 
     @commands.command(name="TurnOFFLED")
-    async def TurnOFFLED(self, ctx : commands.Context[Bot]):
+    async def TurnOFFLED(self, ctx: commands.Context[Bot]):
             USART_COG = self.bot.get_cog("USART_BOT")
                 
             if USART_COG:
                 COG_SERIAL: USART_BOT = USART_COG # type: ignore
                 print(TURN_ON_LED_COMMAND) 
                 await COG_SERIAL.USART_SEND(TURN_OFF_LED_COMMAND)
+                await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn off the RED LED```")
 
 async def setup(bot: Bot):
     await bot.add_cog(LightenUPLEDClass(bot))

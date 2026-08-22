@@ -16,6 +16,7 @@ COMMUNICATION_NULL: bytes = b'N'
 
 LIGHT_COMMAND: bytes = b'L'
 BUTTON_COMMAND: bytes = b'B'
+
 #DISTANCE_SENSOR_COMMAND: bytes = b'D'  (dont wanna do it anymore, too stressful + protoboard doesnt have much space left)
 
 class USART_BOT(commands.Cog): 
@@ -89,9 +90,9 @@ class USART_BOT(commands.Cog):
 
         if CommandHandler:
             await CommandHandler(FIRST_BYTE, self.Channel, self.ConnectedPort)
-            print("COMMAND HANDLER HAS BEEN FOND!")
         else:
-            print("WE WERE NOT ABLKE TO FIND HANDLER", FIRST_BYTE)
+            pass
+            #print("WE WERE NOT ABLKE TO FIND HANDLER", FIRST_BYTE)
 
     async def USART_SEND(self, MESSAGE: bytes):
             ConnectedPort = self.ConnectedPort 
