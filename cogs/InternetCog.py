@@ -26,6 +26,7 @@ class InternetCog(commands.Cog):
             success=True,
             message="Lain Command 1",
             origin="LainATMega328P", 
+            command="LainCommand1", 
         )
            
         await ctx.send(f"```[LAIN WIRED CONNECTION STATUS]: REQUESTED TO SEND: '{JSONToSend}' ```")

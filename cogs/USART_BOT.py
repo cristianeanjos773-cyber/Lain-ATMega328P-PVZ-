@@ -20,6 +20,7 @@ BUTTON_COMMAND: bytes = b'B'
 #DISTANCE_SENSOR_COMMAND: bytes = b'D'  (dont wanna do it anymore, too stressful + protoboard doesnt have much space left)
 
 class USART_BOT(commands.Cog): 
+
     def __init__(self, bot: Bot, USART_STATUS: USART_PROPERTIES) -> None:
         self.bot: Bot = bot
         self.ConnectedPort: serial.Serial | None = None       
@@ -75,14 +76,14 @@ class USART_BOT(commands.Cog):
         """
         FIRST_BYTE: bytes = ConnectedPort.read(1); 
 
-        print(FIRST_BYTE)
+        #print(FIRST_BYTE)
 
         if not FIRST_BYTE:
             await self.USART_SEND(COMMUNICATION_ERROR)
             return 
 
-        print(ConnectedPort.writable())
-        print(COMMUNICATION_SUCCESS)
+        #print(ConnectedPort.writable())
+        #print(COMMUNICATION_SUCCESS)
         
         ConnectedPort.write(COMMUNICATION_SUCCESS) 
 

@@ -1,16 +1,29 @@
 from threading import Thread 
 from Engine import create_bot
-from flask import Flask, request 
+from flask import Flask, request
 from config import TOKEN 
 from Engine import create_bot, BotAttributes  
 
 app = Flask(__name__)
 
+class ServerState:
+    def __init__(self) -> None:
+        self.LatestData = None
+
+State = ServerState() 
+
 @app.route("/Receive", methods=["POST"])
 def ReceiveServerData():
-    Data = request.json 
-    print(f"Data received: '{Data}'")
+    State.LatestData = request.get_json() 
     return {"status": "Success"}, 200
+
+@app.route("/Data", methods=["GET"])
+def GetData():
+    if State.LatestData is None:
+       return {"status": "Failed", "message": "NO_DATA"}, 200
+
+    return State.LatestData, 200  
+
 
 def RunServer():
     app.run(host="0.0.0.0", port=5000, debug=False)   

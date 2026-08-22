@@ -22,7 +22,8 @@ async def LightCommandHandler(FIRST_BYTE: bytes, Channel: int, ConnectedPort: se
     LightJSON: JSONType = JSONType(
         success=True, 
         message=LIGHT_STATUS, 
-        origin="LainATMega328P"    
+        origin="LainATMega328P",
+        command="LIGHT_COMMAND", 
     )
 
     await SendDataToInternet(Channel=Channel, JSON=LightJSON)

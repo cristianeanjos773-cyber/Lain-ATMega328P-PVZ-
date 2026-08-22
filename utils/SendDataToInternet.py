@@ -9,7 +9,7 @@ from dataclasses import asdict
 
 URL_FLASK = "http://localhost:5000/Receive"
 
-
+ 
 async def SendDataToInternet(Channel: int, JSON: JSONType):
 
         MaxAttempts: int = 3 
