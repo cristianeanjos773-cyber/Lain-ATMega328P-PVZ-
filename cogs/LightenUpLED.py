@@ -33,8 +33,5 @@ class LightenUPLEDClass(commands.Cog):
                 print(TURN_ON_LED_COMMAND) 
                 await COG_SERIAL.USART_SEND(TURN_OFF_LED_COMMAND)
 
-                
-
-
 async def setup(bot: Bot):
     await bot.add_cog(LightenUPLEDClass(bot))

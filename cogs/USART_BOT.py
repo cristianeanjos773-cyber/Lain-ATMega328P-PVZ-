@@ -102,7 +102,7 @@ class USART_BOT(commands.Cog):
             ConnectedPort.write(MESSAGE)            
 
             if isinstance(self.Channel, discord.TextChannel):
-                await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: {MESSAGE}, (Commnucation ERROR) to ATMega328P!```")     
+                await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: '{MESSAGE}', (Commnucation ERROR) to ATMega328P!```")     
 
 
     @tasks.loop(seconds=0.5)

@@ -10,3 +10,10 @@ class USART_PROPERTIES:
 @dataclass
 class BotAttributes: 
     ChannelSendId: int
+
+@dataclass
+class JSONType:
+    success: bool
+    message: str
+    origin: str
+    payload: dict | None = None
