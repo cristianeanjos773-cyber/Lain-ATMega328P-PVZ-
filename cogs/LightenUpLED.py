@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from discord.ext import commands 
+from Command_Bytes_Sent import LED_COMMANDS   
 from Engine import Bot
 
 if TYPE_CHECKING:
@@ -7,9 +8,6 @@ if TYPE_CHECKING:
         async def USART_SEND(self, data: bytes) -> None: ... # this is just here to satisfy python strivt 
 else:
     USART_BOT = commands.Cog
-
-TURN_ON_LED_COMMAND: bytes = b'K'
-TURN_OFF_LED_COMMAND: bytes = b'J'
 
 class LightenUPLEDClass(commands.Cog):
 
@@ -23,7 +21,7 @@ class LightenUPLEDClass(commands.Cog):
         if USART_COG:
             COG_SERIAL: USART_BOT = USART_COG # type: ignore
 
-            await COG_SERIAL.USART_SEND(TURN_ON_LED_COMMAND)
+            await COG_SERIAL.USART_SEND(LED_COMMANDS["TURN_ON_LED_COMMAND"])
             await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn on the RED LED```")
 
     @commands.command(name="TurnOFFLED")
@@ -33,7 +31,7 @@ class LightenUPLEDClass(commands.Cog):
             if USART_COG:
                 COG_SERIAL: USART_BOT = USART_COG # type: ignore
 
-                await COG_SERIAL.USART_SEND(TURN_OFF_LED_COMMAND)
+                await COG_SERIAL.USART_SEND(LED_COMMANDS["TURN_OFF_LED_COMMAND"])
                 await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn off the RED LED```")
 
 async def setup(bot: Bot):

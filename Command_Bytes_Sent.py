@@ -1,0 +1,5 @@
+LED_COMMANDS = {
+    "TURN_ON_LED_COMMAND": b'K',
+    "TURN_OFF_LED_COMMAND": b'J',
+    "LED_GAME_START_COMMAND": b'I'
+} 
