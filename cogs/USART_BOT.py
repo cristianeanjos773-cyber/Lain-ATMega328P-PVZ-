@@ -16,6 +16,7 @@ COMMUNICATION_NULL: bytes = b'N'
 
 LIGHT_COMMAND: bytes = b'L'
 BUTTON_COMMAND: bytes = b'B'
+RIGHT_NUMBER_MESSAGE: bytes = b'R'
 
 #DISTANCE_SENSOR_COMMAND: bytes = b'D'  (dont wanna do it anymore, too stressful + breadboard doesnt have much space left)
 
@@ -120,7 +121,7 @@ async def setup(bot: Bot) -> None:
         SERIAL_PORT='COM3',
         BAUDRATE=9600, 
         TIMEOUT=1,
-        USART_HANDLERS= { #type: ignore 
+        USART_HANDLERS = { #type: ignore 
             LIGHT_COMMAND: LightCommandHandler,
             BUTTON_COMMAND: ButtonCommandHandler, 
         }

@@ -1,13 +1,9 @@
-from typing import TYPE_CHECKING
 from discord.ext import commands 
-from Command_Bytes_Sent import LED_COMMANDS   
+from Command_Bytes_sent import LED_COMMANDS   
+from GLOBAL.GlobalTypes import USART_BOT
 from Engine import Bot
 
-if TYPE_CHECKING:
-    class USART_BOT(commands.Cog):
-        async def USART_SEND(self, data: bytes) -> None: ... # this is just here to satisfy python strivt 
-else:
-    USART_BOT = commands.Cog
+
 
 class LightenUPLEDClass(commands.Cog):
 
@@ -16,23 +12,23 @@ class LightenUPLEDClass(commands.Cog):
 
     @commands.command(name="LightenUPLED")
     async def LightenUpLED(self, ctx: commands.Context[Bot]):
-        USART_COG = self.bot.get_cog("USART_BOT")
+        USART_COG: USART_BOT = self.bot.get_cog("USART_BOT") #type: ignore
         
-        if USART_COG:
-            COG_SERIAL: USART_BOT = USART_COG # type: ignore
+        if not USART_COG:
+            return 
 
-            await COG_SERIAL.USART_SEND(LED_COMMANDS["TURN_ON_LED_COMMAND"])
-            await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn on the RED LED```")
+        await USART_COG.USART_SEND(LED_COMMANDS["TURN_ON_LED_COMMAND"])
+        await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn on the RED LED```")
 
     @commands.command(name="TurnOFFLED")
     async def TurnOFFLED(self, ctx: commands.Context[Bot]):
-            USART_COG = self.bot.get_cog("USART_BOT")
-                
-            if USART_COG:
-                COG_SERIAL: USART_BOT = USART_COG # type: ignore
+        USART_COG: USART_BOT = self.bot.get_cog("USART_BOT") #type: ignore
+            
+        if not USART_COG:
+            return 
 
-                await COG_SERIAL.USART_SEND(LED_COMMANDS["TURN_OFF_LED_COMMAND"])
-                await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn off the RED LED```")
+        await USART_COG.USART_SEND(LED_COMMANDS["TURN_OFF_LED_COMMAND"])
+        await ctx.send(f"```[LAIN COMMANDS]: ASKED ATMega328P to turn off the RED LED```")
 
 async def setup(bot: Bot):
     await bot.add_cog(LightenUPLEDClass(bot))

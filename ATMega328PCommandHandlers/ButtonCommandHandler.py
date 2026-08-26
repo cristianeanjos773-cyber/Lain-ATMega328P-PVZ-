@@ -1,7 +1,8 @@
 import discord
 import serial 
 
-async def ButtonCommandHandler(BUTTON_BYTE: bytes, Channel: int, ConnectedPort: serial.Serial) -> None:
+
+async def ButtonCommandHandler(BUTTON_BYTE: bytes, Channel: int, ConnectedPort: serial.Serial | None) -> None:
 
     BUTTON_CHARACTER: str = BUTTON_BYTE.decode('utf-8').strip() 
 
