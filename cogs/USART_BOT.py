@@ -1,5 +1,6 @@
 import serial 
 import discord
+import asyncio 
 
 from ATMega328PCommandHandlers.ButtonCommandHandler import ButtonCommandHandler
 from ATMega328PCommandHandlers.LightCommandHandler import LightCommandHandler 
@@ -64,7 +65,7 @@ class USART_BOT(commands.Cog):
             self.ConnectedPort.close()
 
     
-    async def USART_READ(self):
+    async def USART_READ(self) -> bytes | None:
         ConnectedPort = self.ConnectedPort    
 
         if not ConnectedPort or ConnectedPort.in_waiting == 0:
@@ -92,9 +93,21 @@ class USART_BOT(commands.Cog):
 
         if CommandHandler:
             await CommandHandler(FIRST_BYTE, self.Channel, self.ConnectedPort)
-        else:
-            pass
+        #else:
+            #pass
             #print("WE WERE NOT ABLKE TO FIND HANDLER", FIRST_BYTE)
+
+        return FIRST_BYTE;
+
+    async def NULL_RESPONSE_HANDLER(self):
+
+        Attempts = 0 
+        MaxAttempts = 3
+
+        while Attempts < MaxAttempts:
+            await asyncio.sleep(2)
+            Attempts += 1     
+
 
     async def USART_SEND(self, MESSAGE: bytes):
             ConnectedPort = self.ConnectedPort 
@@ -103,10 +116,26 @@ class USART_BOT(commands.Cog):
                 return 
     
             ConnectedPort.write(MESSAGE)            
+            ATMegaAnswer: bytes | None = await self.USART_READ() 
 
-            if isinstance(self.Channel, discord.TextChannel):
-                await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: '{MESSAGE}', (Commnucation ERROR) to ATMega328P!```")     
 
+            
+            if ATMegaAnswer is None:
+                return ; 
+
+            if ATMegaAnswer == COMMUNICATION_SUCCESS:
+                if isinstance(self.Channel, discord.TextChannel):
+                    await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: '{MESSAGE}', (Communication SUCCES!) to ATMega328P```")
+                    return ; 
+            
+            if ATMegaAnswer == COMMUNICATION_NULL:
+                if isinstance(self.Channel, discord.TextChannel):
+
+                 await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: '{MESSAGE}', (Commnucation ERROR) to ATMega328P!```")  
+                 await self.Channel.send(f" ```[LAIN SERIAL PORT]: Lain will retry to send the message until it gets success for a few seconds! hold on! ```")
+
+                 
+                                         
 
     @tasks.loop(seconds=0.5)
     async def READ_LOOP(self):

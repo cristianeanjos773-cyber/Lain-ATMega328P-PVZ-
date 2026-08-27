@@ -53,7 +53,7 @@ class LedGame(commands.Cog):
          
         await USART_COG.USART_SEND(LED_COMMANDS["LED_GAME_START_COMMAND"])
         await USART_COG.USART_SEND(RandomChosenLed)
-        await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: Try to guess the red LED! (RED LED:7, GREEN LIGHT:4, SECOND RED LED: 3) YOU HAVE 30 SECONDS```")
+        await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: Try to guess the red LED! (RED LED:7, GREEN LIGHT:4, SECOND RED LED: 3) YOU HAVE 30 SECONDS \n right answer: '{RandomChosenLed}'```")
 
         UserMessageAnswer: discord.Message | None = await self.ReturnMessageInput(ctx=ctx) 
 
@@ -62,14 +62,16 @@ class LedGame(commands.Cog):
         
         UserMessageContentByte: bytes = UserMessageAnswer.content.encode(encoding="ascii")
 
+
         if int.from_bytes(UserMessageContentByte) < 0 or int.from_bytes(UserMessageContentByte) > 255:
-            await ctx.send(f"[LAIN MINIGAMES: LEDGAME]: YOU LOST! you tried to guess a number that is bigger or smaller than an unsigned 1 byte integer (uint8_t in C)")
+            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! you tried to guess a number that is bigger or smaller than an unsigned 1 byte integer (uint8_t in C)```")
 
         if UserMessageContentByte == RandomChosenLed:
-            await ctx.send(f"[LAIN MINIGAMES: LEDGAME]: YOU WON! You guessed the right activated LED!")
-        else: 
-            await ctx.send(f"[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid")
+            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU WON! You guessed the right activated LED!```")
+        else:
+            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid, the right LED NUMBER WAS:\n '{RandomChosenLed}' ```")
 
+        await ctx.send(f"USERMSGANSWER BYTE: '{UserMessageContentByte} USERMESGANSWER: '{UserMessageAnswer.content}' ")
 
 
 async def setup(bot: Bot): 
