@@ -9,15 +9,15 @@ from GLOBAL.GlobalTypes import USART_BOT
 
 async def RandomLed() -> bytes:
 
-    LedNumbers = [
-        3,
-        4,
-        7, 
+    LedCommandList = [
+       LED_COMMANDS["LED3_CHOSEN"],
+       LED_COMMANDS["LED4_CHOSEN"],
+       LED_COMMANDS["LED7_CHOSEN"]
     ]
     
-    RandomNumber = random.choice(LedNumbers)
+    ChosenLedCommandList = random.choice(LedCommandList)
 
-    return bytes([RandomNumber])  
+    return ChosenLedCommandList  
 
 class LedGame(commands.Cog):
     def __init__(self, bot: Bot) -> None:
@@ -36,7 +36,7 @@ class LedGame(commands.Cog):
             if AnswerMessage:
                 return AnswerMessage 
 
-        except asyncio.timeout:
+        except TimeoutError:
             await ctx.send(f"[LAIN MINIGAMES: LEDGAME]: TIMEOUT! If you want to start again, use the init command!")
 
          
@@ -50,29 +50,37 @@ class LedGame(commands.Cog):
             return  
 
         RandomChosenLed: bytes = await RandomLed()
-         
-        await USART_COG.USART_SEND(LED_COMMANDS["LED_GAME_START_COMMAND"])
+
         await USART_COG.USART_SEND(RandomChosenLed)
-        await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: Try to guess the red LED! (RED LED:7, GREEN LIGHT:4, SECOND RED LED: 3) YOU HAVE 30 SECONDS \n right answer: '{RandomChosenLed}'```")
+
+        await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: Try to guess the red LED! (RED LED:7, GREEN LIGHT:4, SECOND RED LED: 3) YOU HAVE 30 SECONDS \n right answer: '{RandomChosenLed}'``` \n ('Randomchosenled byte: {RandomChosenLed}'), command byte: \n {LED_COMMANDS["LED_GAME_START_COMMAND"]} ")
 
         UserMessageAnswer: discord.Message | None = await self.ReturnMessageInput(ctx=ctx) 
 
         if UserMessageAnswer is None:
             return
         
-        UserMessageContentByte: bytes = UserMessageAnswer.content.encode(encoding="ascii")
+        Correct_Led_Number: int = int.from_bytes(RandomChosenLed, byteorder="little")
+
+        try:
+            UserAnswerNum = int(UserMessageAnswer.content)
+        except ValueError:
+            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You must type a valid number.```")
+            return
 
 
-        if int.from_bytes(UserMessageContentByte) < 0 or int.from_bytes(UserMessageContentByte) > 255:
+        if UserAnswerNum < 0 or UserAnswerNum > 255:
             await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! you tried to guess a number that is bigger or smaller than an unsigned 1 byte integer (uint8_t in C)```")
-
-        if UserMessageContentByte == RandomChosenLed:
+            return
+        
+        if UserAnswerNum == Correct_Led_Number:
             await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU WON! You guessed the right activated LED!```")
         else:
-            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid, the right LED NUMBER WAS:\n '{RandomChosenLed}' ```")
+            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid, the right LED NUMBER WAS:\n '{Correct_Led_Number}' ```")
+            await ctx.send(f"USERMSGANSWER BYTE: '{UserAnswerNum}' | USERMESGANSWER: '{UserMessageAnswer.content}'")
 
-        await ctx.send(f"USERMSGANSWER BYTE: '{UserMessageContentByte} USERMESGANSWER: '{UserMessageAnswer.content}' ")
-
+        
+        
 
 async def setup(bot: Bot): 
     await bot.add_cog(LedGame(bot))

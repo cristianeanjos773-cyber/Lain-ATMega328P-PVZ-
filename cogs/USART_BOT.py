@@ -99,14 +99,31 @@ class USART_BOT(commands.Cog):
 
         return FIRST_BYTE;
 
-    async def NULL_RESPONSE_HANDLER(self):
+    async def NULL_RESPONSE_HANDLER(self, MESSAGE: bytes):
+
+        # COMMENTARY WHEN I WAKE UP: change C to [SPECIFIC_LED > SPECIFIC_ FUNCTION] BECAUSE ITS OVER ENGIINEREINED
 
         Attempts = 0 
         MaxAttempts = 3
 
         while Attempts < MaxAttempts:
+            ATMegaAnswer: bytes | None = await self.USART_READ() 
+
+            if Attempts >= MaxAttempts:
+                Attempts += 1
+            else:
+                if ATMegaAnswer == COMMUNICATION_ERROR or ATMegaAnswer == COMMUNICATION_NULL:
+                    if isinstance(self.Channel, discord.TextChannel):
+                        await self.Channel.send(f"```[LAIN SERIAL PORT]: FATAL ERROR! tried to send the same byte after 3 attempts and still failed. the wired is not in our hearts :( )```") #bla 
+                        break 
+
+            if ATMegaAnswer == COMMUNICATION_SUCCESS:
+                if isinstance(self.Channel, discord.TextChannel):
+                     await self.Channel.send(f"```[LAIN SERIAL PORT]: RETRY SUCCES! Lain sent BYTE: '{MESSAGE}', (Communication SUCCES!) to ATMega328P :) ```")
+                     break
+
             await asyncio.sleep(2)
-            Attempts += 1     
+
 
 
     async def USART_SEND(self, MESSAGE: bytes):
@@ -114,12 +131,14 @@ class USART_BOT(commands.Cog):
     
             if not ConnectedPort or not ConnectedPort.writable():
                 return 
-    
+
+            if isinstance(self.Channel, discord.TextChannel):
+                 await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain tried to send BYTE: '{MESSAGE}' to ATMega328P!```")  
+
+            ConnectedPort.reset_input_buffer()
             ConnectedPort.write(MESSAGE)            
             ATMegaAnswer: bytes | None = await self.USART_READ() 
-
-
-            
+                       
             if ATMegaAnswer is None:
                 return ; 
 
@@ -130,9 +149,9 @@ class USART_BOT(commands.Cog):
             
             if ATMegaAnswer == COMMUNICATION_NULL:
                 if isinstance(self.Channel, discord.TextChannel):
-
-                 await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: '{MESSAGE}', (Commnucation ERROR) to ATMega328P!```")  
-                 await self.Channel.send(f" ```[LAIN SERIAL PORT]: Lain will retry to send the message until it gets success for a few seconds! hold on! ```")
+                     await self.Channel.send(f"```[LAIN SERIAL PORT]: Lain sent BYTE: '{MESSAGE}', (Commnucation ERROR) to ATMega328P!```")  
+                     await self.Channel.send(f" ```[LAIN SERIAL PORT]: Lain will retry to send the message until it gets success for a few seconds! hold on! ```")
+                     await self.NULL_RESPONSE_HANDLER(MESSAGE) 
 
                  
                                          
