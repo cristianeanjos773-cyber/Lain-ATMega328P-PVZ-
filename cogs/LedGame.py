@@ -1,9 +1,12 @@
 import discord
 import random 
 import asyncio 
+
 from discord.ext import commands
 from Engine import Bot
+
 from Command_Bytes_sent import LED_COMMANDS
+from Command_Bytes_sent import LED_BYTE_NUMBERS 
 
 from GLOBAL.GlobalTypes import USART_BOT
 
@@ -49,18 +52,20 @@ class LedGame(commands.Cog):
             print(f"[LedGame]: was not able to find usart cog")
             return  
 
-        RandomChosenLed: bytes = await RandomLed()
+        RandomChosenLedByte: bytes = await RandomLed()
+        RandomChosenLedInt: int = LED_BYTE_NUMBERS[RandomChosenLedByte]
 
-        await USART_COG.USART_SEND(RandomChosenLed)
 
-        await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: Try to guess the red LED! (RED LED:7, GREEN LIGHT:4, SECOND RED LED: 3) YOU HAVE 30 SECONDS \n right answer: '{RandomChosenLed}'``` \n ('Randomchosenled byte: {RandomChosenLed}'), command byte: \n {LED_COMMANDS["LED_GAME_START_COMMAND"]} ")
+        #Random chosen byte = the byte chosen, not the number representing the ACTUAL led in the breadboard
+        # Random chosen Led Num = the actual number behind the byte. 
 
+        await USART_COG.USART_SEND(RandomChosenLedByte)
+
+        await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: Try to guess the red LED! (RED LED:7, GREEN LIGHT:4, SECOND RED LED: 3) YOU HAVE 30 SECONDS \n right answer: '{RandomChosenLedInt}'``` \n ('Randomchosenled byte: {RandomChosenLedByte}' ```)")
         UserMessageAnswer: discord.Message | None = await self.ReturnMessageInput(ctx=ctx) 
 
         if UserMessageAnswer is None:
             return
-        
-        Correct_Led_Number: int = int.from_bytes(RandomChosenLed, byteorder="little")
 
         try:
             UserAnswerNum = int(UserMessageAnswer.content)
@@ -72,12 +77,19 @@ class LedGame(commands.Cog):
         if UserAnswerNum < 0 or UserAnswerNum > 255:
             await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! you tried to guess a number that is bigger or smaller than an unsigned 1 byte integer (uint8_t in C)```")
             return
+
+
+        async def OnAnswerEvent():
+            EndGameLedCommand: bytes = LED_COMMANDS["END_LED_GAME"]
+            await USART_COG.USART_SEND(EndGameLedCommand) 
         
-        if UserAnswerNum == Correct_Led_Number:
+        if UserAnswerNum == RandomChosenLedInt:
             await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU WON! You guessed the right activated LED!```")
+            await OnAnswerEvent()
         else:
-            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid, the right LED NUMBER WAS:\n '{Correct_Led_Number}' ```")
+            await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid, the right LED NUMBER WAS:\n '{RandomChosenLedInt}' ```")
             await ctx.send(f"USERMSGANSWER BYTE: '{UserAnswerNum}' | USERMESGANSWER: '{UserMessageAnswer.content}'")
+            await OnAnswerEvent()
 
         
         

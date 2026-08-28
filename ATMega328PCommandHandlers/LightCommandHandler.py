@@ -14,7 +14,7 @@ async def LightCommandHandler(FIRST_BYTE: bytes, Channel: int, ConnectedPort: se
         
     LIGHT_BYTES = ConnectedPort.read(2)
 
-    print("LIGHT BYTES:", LIGHT_BYTES, "FIRST BYTE:", FIRST_BYTE)
+    #print("LIGHT BYTES:", LIGHT_BYTES, "FIRST BYTE:", FIRST_BYTE)
         
     LIGHT_VALUE = int.from_bytes(LIGHT_BYTES, byteorder="big")
     LIGHT_STATUS: str = LightNumberStatus(LIGHT_VALUE)
