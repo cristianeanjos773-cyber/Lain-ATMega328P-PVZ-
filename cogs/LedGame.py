@@ -1,12 +1,12 @@
 import discord
 import random 
-import asyncio 
+#import asyncio 
 
 from discord.ext import commands
 from Engine import Bot
 
-from Command_Bytes_sent import LED_COMMANDS
-from Command_Bytes_sent import LED_BYTE_NUMBERS 
+from Command_Bytes_Sent import LED_COMMANDS
+from Command_Bytes_Sent import LED_BYTE_NUMBERS 
 
 from GLOBAL.GlobalTypes import USART_BOT
 
@@ -45,7 +45,7 @@ class LedGame(commands.Cog):
          
     @commands.command(name="LedGameInit")
     async def LedGameInit(self, ctx: commands.Context[Bot]):
-
+                
         USART_COG: USART_BOT = self.bot.get_cog("USART_BOT") #type: ignore
 
         if not USART_COG :
@@ -56,7 +56,7 @@ class LedGame(commands.Cog):
         RandomChosenLedInt: int = LED_BYTE_NUMBERS[RandomChosenLedByte]
 
 
-        #Random chosen byte = the byte chosen, not the number representing the ACTUAL led in the breadboard
+        # Random chosen byte = the byte chosen, not the number representing the ACTUAL led in the breadboard
         # Random chosen Led Num = the actual number behind the byte. 
 
         await USART_COG.USART_SEND(RandomChosenLedByte)
@@ -89,9 +89,6 @@ class LedGame(commands.Cog):
         else:
             await ctx.send(f"```[LAIN MINIGAMES: LEDGAME]: YOU LOST! You either guessed the wrong activated LED or passed something invalid, the right LED NUMBER WAS:\n '{RandomChosenLedInt}' ```")
             await ctx.send(f"USERMSGANSWER BYTE: '{UserAnswerNum}' | USERMESGANSWER: '{UserMessageAnswer.content}'")
-            await OnAnswerEvent()
-
-        
         
 
 async def setup(bot: Bot): 
